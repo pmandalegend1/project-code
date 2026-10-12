@@ -1,0 +1,28 @@
+{
+  "vocab": [
+    343,
+    352,
+    433,
+    442,
+    451,
+    532,
+    541,
+    3142,
+    3412,
+    3421,
+    3511,
+    4132,
+    4141,
+    4222,
+    4231,
+    4321,
+    4411,
+    32122,
+    32221,
+    41212,
+    41221,
+    42211
+  ],
+  "derived_from": "stable_windows.parquet",
+  "note": "union of formations observed in the stable windows and the opponent model's vocabulary, so both halves index the same set"
+}

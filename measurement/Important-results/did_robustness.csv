@@ -1,0 +1,8 @@
+term,estimate_beta3,std_error,p_value,conf_low_95,conf_high_95,n_long_rows,n_pairs,n_matches,significant_p_lt_0_05,analysis,status,matched_pairs,winsorize_cutoff_95,error
+post:treated,0.18365929062280317,0.15625335429609274,0.23983703196743733,-0.12259165626111551,0.48991023750672186,1556.0,389.0,377.0,False,window_3_minutes,estimated,389,,
+,,,,,,,,,,window_10_minutes,failed: RuntimeError,0,,No treatment event could be matched to a valid same-match control window.
+post:treated,0.10082373010057233,0.14304425482638836,0.4809079960058744,-0.17953785755451868,0.38118531775566333,2964.0,741.0,697.0,False,minimum_10_minute_gap,estimated,741,,
+post:treated,0.08041114222939072,0.11279227602087878,0.47589925215202644,-0.14065765650583245,0.3014799409646139,2748.0,687.0,661.0,False,winsorize_95,estimated,687,7.0,
+post:treated,0.17361976062784318,0.15967765169813355,0.27689802350253157,-0.13934268583642961,0.48658220709211597,2364.0,591.0,582.0,False,exclude_opponent_responses,estimated,591,,
+post:treated,0.03747204847850005,0.33993368067892954,0.9122242671123185,-0.6287857227843411,0.7037298197413412,512.0,128.0,125.0,False,halftime_only,estimated,128,,
+,,,,,,,,,,extra_time_only,failed: RuntimeError,0,,No treatment event could be matched to a valid same-match control window.

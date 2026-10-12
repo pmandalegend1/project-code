@@ -1,0 +1,99 @@
+{
+  "random": {
+    "top1": 0.060085836909871244,
+    "top3": 0.1888412017167382,
+    "top5": 0.33476394849785407,
+    "mrr": 0.2070452377855816
+  },
+  "frequency": {
+    "top1": 0.2317596566523605,
+    "top3": 0.5665236051502146,
+    "top5": 0.7339055793991416,
+    "mrr": 0.44616452931903583
+  },
+  "transition": {
+    "top1": 0.26180257510729615,
+    "top3": 0.5836909871244635,
+    "top5": 0.7982832618025751,
+    "mrr": 0.4723861855836106
+  },
+  "prior": {
+    "top1": 0.03862660944206009,
+    "top3": 0.12446351931330472,
+    "top5": 0.27467811158798283,
+    "mrr": 0.1820636028254058
+  },
+  "planner": {
+    "top1": 0.04721030042918455,
+    "top3": 0.16738197424892703,
+    "top5": 0.2446351931330472,
+    "mrr": 0.18503898342954161
+  },
+  "critic_only:xG": {
+    "top1": 0.06437768240343347,
+    "top3": 0.18025751072961374,
+    "top5": 0.2703862660944206,
+    "mrr": 0.20483955124513098
+  },
+  "critic_only:stability": {
+    "top1": 0.0815450643776824,
+    "top3": 0.22317596566523606,
+    "top5": 0.3648068669527897,
+    "mrr": 0.23675699002952252
+  },
+  "critic_only:counter_resistance": {
+    "top1": 0.034334763948497854,
+    "top3": 0.15879828326180256,
+    "top5": 0.3090128755364807,
+    "mrr": 0.18325189950726462
+  },
+  "ranked_targets": {
+    "median": 16.0,
+    "min": 4,
+    "max": 16,
+    "fewer_than_k": {
+      "1": 0,
+      "3": 0,
+      "5": 1
+    },
+    "n_revised_per_decision": 3
+  },
+  "critic_effective_weights": {
+    "xG": 0.5,
+    "stability": 0.0,
+    "counter_resistance": 0.5
+  },
+  "critic_agreement": {
+    "decisions": 233,
+    "status": {
+      "ok": 193,
+      "constant": 40
+    },
+    "constant_in_decisions": {
+      "stability": 39,
+      "counter_resistance": 1
+    },
+    "dead_critics": [],
+    "pairs": {
+      "counter_resistance|stability": {
+        "mean_rho": 0.05782837035962215,
+        "decisions": 193
+      },
+      "counter_resistance|xG": {
+        "mean_rho": 0.10764731898825255,
+        "decisions": 232
+      },
+      "stability|xG": {
+        "mean_rho": 0.14576449269052277,
+        "decisions": 194
+      }
+    }
+  },
+  "coverage": {
+    "in_vocabulary": 1.0,
+    "in_grammar": 0.9785407725321889,
+    "in_candidate_set": 0.9785407725321889,
+    "n_evaluated": 233
+  },
+  "world_model": "trained"
+}

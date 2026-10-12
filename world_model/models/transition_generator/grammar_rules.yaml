@@ -1,0 +1,180 @@
+# Tactical grammar rules for FormationTransitionGenerator
+# A transition (f_src, f_tgt, intent) is INFEASIBLE if ANY matching rule fires.
+# Fields:
+#   id:             unique rule identifier
+#   condition:      plain-English description of what is blocked and why
+#   intent_blocked: list of intent strings from INTENTS vocab; "any" means all intents blocked
+#   score_state:    "winning" | "drawing" | "losing" | "winning_2+" | "losing_2+" | "any"
+#                   "winning" = score_diff > 0, "losing" = score_diff < 0
+#                   "winning_2+" = score_diff >= 2, "losing_2+" = score_diff <= -2
+#   minute_range:   [min_minute, max_minute] inclusive; [0, 90] means entire match
+#   f_src_filter:   optional list of source formation codes this rule applies to; omit = all
+#   f_tgt_filter:   optional list of target formation codes this rule applies to; omit = all
+#   structural_constraint: optional plain-English note on formation-level structural logic
+#   notes:          implementation notes for generator.py
+
+rules:
+
+  - id: R01
+    condition: >
+      Offensive intent is blocked when winning by 2 or more goals and minute >= 75.
+      A team with a two-goal cushion late in the match has no rational incentive
+      to commit further to attack; doing so exposes the backline to counter-attacks.
+    intent_blocked: ["offensive"]
+    score_state: "winning_2+"
+    minute_range: [75, 90]
+    notes: "score_diff >= 2 AND minute >= 75 -> block offensive"
+
+  - id: R02
+    condition: >
+      Conservative intent is blocked when losing by 2 or more goals and minute < 60.
+      A team chasing a two-goal deficit with more than 30 minutes remaining cannot
+      rationally adopt a conservative shape; it forfeits the match without attempting recovery.
+    intent_blocked: ["conservative"]
+    score_state: "losing_2+"
+    minute_range: [0, 59]
+    notes: "score_diff <= -2 AND minute < 60 -> block conservative"
+
+  - id: R03
+    condition: >
+      Defensive intent is blocked when losing by 2 or more goals and minute >= 70.
+      With the match almost over and a two-goal deficit, a defensive formation change
+      is tactically incoherent; only offensive or pressing transitions are viable.
+    intent_blocked: ["defensive"]
+    score_state: "losing_2+"
+    minute_range: [70, 90]
+    notes: "score_diff <= -2 AND minute >= 70 -> block defensive"
+
+  - id: R04
+    condition: >
+      Pressing intent is blocked when winning by 2 or more goals and minute >= 80.
+      High-press formations create transition exposure. A team with a two-goal lead
+      inside the final ten minutes should protect space, not press aggressively.
+    intent_blocked: ["pressing"]
+    score_state: "winning_2+"
+    minute_range: [80, 90]
+    notes: "score_diff >= 2 AND minute >= 80 -> block pressing"
+
+  - id: R05
+    condition: >
+      A transition to the identical formation code is infeasible for any intent.
+      f_src == f_tgt is a no-op structurally and would waste a substitution slot
+      or tactical shift event.
+    intent_blocked: ["offensive", "defensive", "wide", "narrow", "pressing", "conservative"]
+    score_state: "any"
+    minute_range: [0, 90]
+    structural_constraint: "f_src == f_tgt"
+    notes: "Enforce in generator: skip candidate if f_src_code == f_tgt_code regardless of intent"
+
+  - id: R06
+    condition: >
+      Offensive intent is blocked in period 1 (first half) when the scoreline is level
+      and minute < 20. Opening-phase tactical shifts toward an offensive formation
+      before the match has stabilised are not observed in StatsBomb data and represent
+      an unstable starting condition for the world model.
+    intent_blocked: ["offensive"]
+    score_state: "drawing"
+    minute_range: [0, 19]
+    notes: "period == 1 AND score_diff == 0 AND minute < 20 -> block offensive"
+
+  - id: R07
+    condition: >
+      Wide intent is blocked when transitioning into a five-defender formation
+      (532, 541). Five-back shapes are structurally narrow and compact by design;
+      tagging them with wide intent is semantically inconsistent and not observed
+      in the training data.
+    intent_blocked: ["wide"]
+    score_state: "any"
+    minute_range: [0, 90]
+    f_tgt_filter: [532, 541]
+    structural_constraint: "Five-defender target formations are inherently narrow/compact"
+    notes: "f_tgt in [532, 541] -> block wide intent"
+
+  - id: R08
+    condition: >
+      Narrow intent is blocked when transitioning into a three-attacker wide formation
+      (433, 343). These formations deploy explicit wide forwards and generate width
+      structurally; labelling the transition narrow is semantically inconsistent.
+    intent_blocked: ["narrow"]
+    score_state: "any"
+    minute_range: [0, 90]
+    f_tgt_filter: [433, 343]
+    structural_constraint: "Three-attacker wide formations are structurally wide"
+    notes: "f_tgt in [433, 343] -> block narrow intent"
+
+  - id: R09
+    condition: >
+      Any intent is blocked when minute >= 88 and the team is drawing or winning.
+      Late-game formation changes in non-losing states are vanishingly rare in the
+      data and push the world model out of its training distribution. The system
+      should not recommend transitions that cannot be executed before the final whistle.
+    intent_blocked: ["offensive", "defensive", "wide", "narrow", "pressing", "conservative"]
+    score_state: "any"
+    minute_range: [88, 90]
+    notes: >
+      minute >= 88 AND score_diff >= 0 -> block all intents.
+      Losing teams (score_diff < 0) are exempt: desperation changes are observed.
+      Implement as: if minute >= 88 and score_diff >= 0: skip all transitions.
+
+  - id: R10
+    condition: >
+      Conservative intent is blocked when transitioning FROM a five-defender formation
+      (532, 541) because these shapes are already maximally conservative structurally.
+      Adding a conservative intent tag to an already-defensive base formation is
+      redundant and not present in training data.
+    intent_blocked: ["conservative"]
+    score_state: "any"
+    minute_range: [0, 90]
+    f_src_filter: [532, 541]
+    structural_constraint: "Five-defender source formations are already at the conservative extreme"
+    notes: "f_src in [532, 541] -> block conservative intent"
+
+  - id: R11
+    condition: >
+      Pressing intent is blocked when transitioning INTO a five-defender formation
+      (532, 541). High-press requires advanced wide structure to funnel play;
+      five-back shapes are incompatible with sustained high-press and the combination
+      does not appear in the natural experiment training data.
+    intent_blocked: ["pressing"]
+    score_state: "any"
+    minute_range: [0, 90]
+    f_tgt_filter: [532, 541]
+    structural_constraint: "Five-defender formations cannot sustain high-press structure"
+    notes: "f_tgt in [532, 541] -> block pressing intent"
+
+  - id: R12
+    condition: >
+      Offensive intent is blocked when the transition increases the number of
+      dedicated defenders (e.g. moving from 433 to 532, or from 442 to 541).
+      A transition that adds defenders while labelled offensive is structurally
+      contradictory and would produce implausible world model queries.
+    intent_blocked: ["offensive"]
+    score_state: "any"
+    minute_range: [0, 90]
+    structural_constraint: >
+      defender_count(f_tgt) > defender_count(f_src).
+      Defender counts by formation:
+        GK excluded. Count: 3-back = 3, 4-back = 4, 5-back = 5.
+        {343:3, 352:3, 3421:3, 433:4, 442:4, 4141:4, 4231:4, 4312:4,
+         4321:4, 4411:4, 4132:4, 451:4, 4222:4, 532:5, 541:5}
+    notes: >
+      Implement in generator: compute defender_count from a lookup dict.
+      If defender_count[f_tgt] > defender_count[f_src]: block offensive intent.
+
+# Lookup table for implementing R12 in generator.py
+defender_counts:
+  343: 3
+  352: 3
+  3421: 3
+  433: 4
+  442: 4
+  4141: 4
+  4231: 4
+  4312: 4
+  4321: 4
+  4411: 4
+  4132: 4
+  451: 4
+  4222: 4
+  532: 5
+  541: 5

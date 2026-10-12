@@ -1,0 +1,2 @@
+n_units,missing_rate,treated_coefficient,treated_p_value,treatment_predicts_missingness,status
+3234,0.37353123067408783,0.12632719205099044,0.08876129067340771,True,treatment_predicts_or_unavailable

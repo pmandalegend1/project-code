@@ -1,0 +1,3 @@
+estimator,effect,effect_scale,std_error,p_value,n_rows,windows_discarded_as_undefined
+ratio DiD (OLS on PPDA),0.3019500074172884,PPDA units,0.5853466379542117,0.6059604377100092,2140,2192
+"count DiD (NB, offset=log passes)",0.029365764339949935,"log rate ratio, actions per pass",0.0480744287443287,0.5413057810125328,4322,0

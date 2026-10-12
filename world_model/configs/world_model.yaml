@@ -1,0 +1,95 @@
+# World Model Training Configuration
+# BipartiteFormationGNN — RAMFP pipeline
+# Temporal split: train on all but most recent season per competition; test on most recent season.
+
+# --- Paths ---
+data_dir:       data/processed
+output_dir:     results
+checkpoint_dir: checkpoints
+
+# --- Model architecture ---
+gnn_layers: 3
+gnn_heads: 4
+node_dim: 128
+
+# --- Option A experiment: freeze message passing ---
+# Set to true for the "freeze graph, train readout only" run. Comment out or
+# set false to restore normal training.
+freeze_graph: true
+
+readout_dim:  256     # 2 * node_dim, set automatically in code; listed here for reference
+output_dim:   4       # [xg_delta, possession_pct, ppda, shots_on_target]
+node_feat_dim: 80
+edge_feat_dim: 2
+
+# --- Training ---
+lr:                    0.0003   # 3e-4
+batch_size:            32
+epochs:                100
+early_stopping_patience: 10
+seed:                  42
+
+# Per-target MSE loss weights [xg_delta, possession_pct, ppda, shots_on_target]
+# Targets are on different scales; weights down-weight ppda (large absolute values)
+# and up-weight xg_delta (small absolute values, primary metric).
+loss_weights: [3.0, 1.0, 0.1, 1.0]
+
+# --- Temporal train/test split ---
+# Rule: for each competition, the most recent season is held out for test and
+# every earlier season trains. Competitions with a single season go entirely
+# to train, since no held-out season is possible for them.
+#
+# The lists below are deliberately empty. They previously enumerated five
+# competition-seasons (La Liga 1/2/27, Women's Euro 106, World Cup 3, UCL 4,
+# FA WSL 42) chosen when the corpus held only those. The corpus now holds 67
+# competition-seasons. With the stale lists, test was a single 2006-07 season
+# and the other 62 seasons -- including every season PLAYED LATER than the
+# test season -- fell into train unexamined. That is not a temporal split: it
+# trains on the future and tests on the past.
+#
+# train_world_model.py applies the rule when these lists name nothing present
+# in the data, so setting them empty selects the rule. Populate them only to
+# override it deliberately, and say so in the paper if you do.
+
+train_competitions: []
+test_competitions: []
+
+# Used only when no window carries competition metadata at all: a
+# chronological 80/20 split by MATCH (ordered on match_date when present),
+# so no match ever appears on both sides.
+temporal_split_fallback: chronological_8020
+
+# --- Normalisation ---
+# z-score normalise each target using train-set mean/std.
+# Stats are computed on the fly in train_world_model.py and saved alongside checkpoint.
+normalise_targets: true
+normalise_stats_path: checkpoints/world_model_normalise_stats.json
+
+# --- Data ---
+stable_windows_path:     data/processed/stable_windows.parquet
+role_matchup_stats_path: data/processed/role_matchup_stats.parquet
+style_clusters_path:     data/processed/team_style_clusters.parquet
+formation_vocab_path:    data/processed/formation_vocab.json
+canon_roles_path:        models/world_model/canonical_roles.json
+matchups_path:           models/world_model/positional_matchups.json
+
+# Drop windows where ppda is NaN (no defensive actions in window).
+# Set false to impute with column mean instead.
+# ppda is target #3 AND is measured over the same window as the targets, so
+# passing it as a node feature shows the model a 4-bucket copy of one answer
+# (correlation 0.668 with the target on this corpus). Leave this false.
+# Set true only to reproduce the leaked run for comparison.
+use_ppda_feature: false
+
+drop_nan_ppda: false
+ppda_impute_value: null   # null -> use train-set mean at runtime
+
+# --- Checkpointing ---
+checkpoint_path:      checkpoints/world_model_best.pt
+checkpoint_metric:    val_mse_total   # save best by sum of per-target val MSE
+save_every_n_epochs:  10              # periodic backup regardless of best
+
+# --- Logging ---
+log_per_target_metrics: true     # log MSE and Pearson r for each of the 4 targets each epoch
+log_path: results/world_model_train_log.json
+use_tqdm: true

@@ -1,0 +1,42 @@
+{
+  "xg_delta": {
+    "gnn_r_mean": 0.21853105738090742,
+    "gnn_r_sd": 0.02635186435710507,
+    "nograph_r_mean": 0.21055450286964225,
+    "nograph_r_sd": 0.02654851896876705,
+    "ridge_r": 0.20015931642494095,
+    "boosting_r": 0.13036323200510508,
+    "margin_2sd": 0.05270372871421014,
+    "verdict": "graph NOT shown to help"
+  },
+  "possession_pct": {
+    "gnn_r_mean": 0.5240928916274555,
+    "gnn_r_sd": 0.006538535953355289,
+    "nograph_r_mean": 0.5251226019883964,
+    "nograph_r_sd": 0.009883806027732707,
+    "ridge_r": 0.5107205161007621,
+    "boosting_r": 0.47588377832313283,
+    "margin_2sd": 0.013077071906710577,
+    "verdict": "graph NOT shown to help"
+  },
+  "ppda": {
+    "gnn_r_mean": 0.3120968975171869,
+    "gnn_r_sd": 0.018290469324363522,
+    "nograph_r_mean": 0.3126432583206893,
+    "nograph_r_sd": 0.00963544559465689,
+    "ridge_r": 0.2812018238123494,
+    "boosting_r": 0.2433993316839377,
+    "margin_2sd": 0.036580938648727045,
+    "verdict": "graph NOT shown to help"
+  },
+  "shots_on_target": {
+    "gnn_r_mean": 0.04715071542345561,
+    "gnn_r_sd": 0.00787173018105014,
+    "nograph_r_mean": 0.04996167276117683,
+    "nograph_r_sd": 0.0040822921054155725,
+    "ridge_r": 0.0692077899466767,
+    "boosting_r": -0.04276109393323239,
+    "margin_2sd": 0.01574346036210028,
+    "verdict": "graph NOT shown to help"
+  }
+}

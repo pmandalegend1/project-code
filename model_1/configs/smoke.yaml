@@ -1,0 +1,6 @@
+# Fast config for CI / smoke tests. Not for reporting numbers.
+encoder: {d_model: 64, n_layers: 2, n_heads: 4, dim_ff: 128, seq_len: 24, gat_dim: 64, d_context: 128}
+opponent: {d_model: 128, d_style: 16}
+train: {epochs: 4, patience: 3, n_folds: 3, seeds: [0], batch_size: 32, amp: false}
+pretrain: {epochs: 1, batch_size: 64, max_sequences: 2000}
+device: cpu

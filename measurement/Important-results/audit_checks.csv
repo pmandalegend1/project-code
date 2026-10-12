@@ -1,0 +1,25 @@
+check,status,value,expected
+inventory_game_ids_unique,PASS,0,0
+inventory_event_files_complete,PASS,0,0
+inventory_lineup_files_complete,PASS,0,0
+competition_season_pairs,PASS,80,80
+summary_game_count_matches_inventory,PASS,3961,3961
+summary_game_ids_unique,PASS,0,0
+canonical_event_count_preserved_all_games,PASS,0,0
+processing_errors_empty,PASS,empty,empty
+match_ppda_row_count,PASS,7922,7922
+match_ppda_two_rows_per_match_by_pair,PASS,0,0
+ppda_15min_row_count,PASS,47532,47532
+ppda_15min_keys_unique,PASS,0,0
+match_ppda_missing_values,PASS,0,0
+ppda_15min_missing_values,WARN,965,0
+natural_experiment_count_matches_summary,PASS,3282,3282
+natural_experiment_ids_unique,PASS,0,0
+natural_experiment_eligible_count,PASS,3282,3282
+natural_experiments_with_complete_ppda,WARN,2056,3282
+natural_experiment_halftime_shifts_flagged,PASS,384,column present
+natural_experiments_near_halftime_or_crossing_boundary,WARN,529,0
+natural_experiments_in_extra_time,WARN,30,0
+natural_experiment_five_minute_windows,PASS,0,0
+eligible_not_greater_than_actual_changes,PASS,0,0
+halftime_shifts_not_greater_than_tactical_shifts,PASS,0,0

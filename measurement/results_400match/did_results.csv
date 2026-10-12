@@ -1,0 +1,2 @@
+term,estimate_beta3,std_error,p_value,conf_low_95,conf_high_95,n_long_rows,n_pairs,n_matches,significant_p_lt_0_05
+post:treated,-1.2272186147186186,1.7113931400641587,0.4733201130375486,-4.581487532633282,2.127050303196045,176,44,44,False

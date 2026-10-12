@@ -1,0 +1,62 @@
+{
+  "xg_delta": {
+    "gnn": {
+      "sd_real": 0.20639080261646106,
+      "sd_formations": 0.08588309506741404,
+      "sd_context": 0.23437127898197324,
+      "formation_share": 0.268171497492708
+    },
+    "ridge": {
+      "sd_real": 0.04793190583586693,
+      "sd_formations": 0.07013173401355743,
+      "sd_context": 0.014659265987575054,
+      "formation_share": 0.8271129727363586
+    },
+    "actual_sd": 0.2587983317530191
+  },
+  "possession_pct": {
+    "gnn": {
+      "sd_real": 0.2354339067933151,
+      "sd_formations": 0.11637925884722122,
+      "sd_context": 0.25406165845064294,
+      "formation_share": 0.3141641579341058
+    },
+    "ridge": {
+      "sd_real": 0.06227097660303116,
+      "sd_formations": 0.07356566190719604,
+      "sd_context": 0.0046745529398322105,
+      "formation_share": 0.9402537941932678
+    },
+    "actual_sd": 0.15287168906077092
+  },
+  "ppda": {
+    "gnn": {
+      "sd_real": 9.61589235462943,
+      "sd_formations": 4.403782758595393,
+      "sd_context": 10.907129426801546,
+      "formation_share": 0.28762380093823414
+    },
+    "ridge": {
+      "sd_real": 2.118384599685669,
+      "sd_formations": 3.6313540935516357,
+      "sd_context": 0.5573915243148804,
+      "formation_share": 0.8669312000274658
+    },
+    "actual_sd": 11.335484566515746
+  },
+  "shots_on_target": {
+    "gnn": {
+      "sd_real": 0.37287968044114944,
+      "sd_formations": 0.20246203387119732,
+      "sd_context": 0.4146123481899254,
+      "formation_share": 0.3280998851304493
+    },
+    "ridge": {
+      "sd_real": 0.07436831295490265,
+      "sd_formations": 0.3801160752773285,
+      "sd_context": 0.05497444048523903,
+      "formation_share": 0.8736482858657837
+    },
+    "actual_sd": 1.0127393670836666
+  }
+}

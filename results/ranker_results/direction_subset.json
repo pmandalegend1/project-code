@@ -1,0 +1,45 @@
+{
+  "n": 76,
+  "matches": 67,
+  "majority": 0.40789473684210525,
+  "class_counts": {
+    "lateral": 31,
+    "more defensive": 30,
+    "more attacking": 15
+  },
+  "models": {
+    "current shape only": {
+      "acc": 0.4298245614035087,
+      "diff_vs_shape": 0.0,
+      "ci": [
+        0.0,
+        0.0
+      ]
+    },
+    "N1 model: shape + our action + style  [PRIMARY]": {
+      "acc": 0.3508771929824562,
+      "diff_vs_shape": -0.07894736842105254,
+      "ci": [
+        -0.1555555555555555,
+        -5.551115123125783e-17
+      ]
+    },
+    "ablation: shape + our action (no style)": {
+      "acc": 0.38596491228070173,
+      "diff_vs_shape": -0.04385964912280699,
+      "ci": [
+        -0.11415525114155245,
+        0.023497080041222827
+      ]
+    },
+    "full: + game state  [secondary]": {
+      "acc": 0.4035087719298246,
+      "diff_vs_shape": -0.026315789473684126,
+      "ci": [
+        -0.12889583333333338,
+        0.07763298345490127
+      ]
+    }
+  },
+  "verdict": "FAIL"
+}

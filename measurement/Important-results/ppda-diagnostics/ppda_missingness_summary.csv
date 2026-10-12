@@ -1,0 +1,5 @@
+window,ppda_missing,zero_defensive_actions,windows,mean_passes,median_passes,mean_defensive_actions,median_defensive_actions,mean_total_pressing_events
+after,False,False,1873,7.136145221569675,6.0,3.772557394554191,3.0,91.05712760277629
+after,True,True,483,2.5942028985507246,2.0,0.0,0.0,88.34368530020704
+before,False,False,1764,6.537414965986395,6.0,3.479591836734694,3.0,83.86281179138322
+before,True,True,592,2.20777027027027,2.0,0.0,0.0,76.74662162162163

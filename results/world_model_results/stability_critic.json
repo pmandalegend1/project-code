@@ -1,0 +1,27 @@
+{
+  "mlp": {
+    "auroc_mean": 0.5365335449748192,
+    "auroc_std": 0.017124742614870438,
+    "ap_mean": 0.18866209711023565,
+    "ap_std": 0.025014211092538978,
+    "n_folds": 15
+  },
+  "logistic_delta_struct": {
+    "auroc_mean": 0.5446565810788239,
+    "auroc_std": 0.026938979332673817,
+    "ap_mean": 0.17836672492527011,
+    "ap_std": 0.018122346666383994,
+    "n_folds": 5
+  },
+  "delta_struct_raw": {
+    "auroc_mean": 0.45534341892117614,
+    "auroc_std": 0.02693897933267385,
+    "ap_mean": 0.15010585209249155,
+    "ap_std": 0.009264392330061154,
+    "n_folds": 5
+  },
+  "base_rate": 0.1620745542949757,
+  "gap": -0.008123036104004666,
+  "fold_noise": 0.026938979332673817,
+  "verdict": "KEEP the structural-distance placeholder; the learned critic does not improve on it"
+}

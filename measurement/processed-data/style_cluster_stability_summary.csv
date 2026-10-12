@@ -1,0 +1,3 @@
+test_type,repeats,ari_mean,ari_std,ari_min,ari_median,ari_max,nmi_mean,nmi_std,nmi_min,nmi_median,nmi_max
+repeated_kmeans,100,1.0,0.0,1.0,1.0,1.0,1.0,0.0,1.0,1.0,1.0
+subsample_kmeans,100,0.9974916387959866,0.025083612040133783,0.7491638795986622,1.0,1.0,0.997209909991432,0.02790090008568086,0.7209909991431913,1.0,1.0

@@ -1,0 +1,12 @@
+stage,value
+input_natural_experiments,2164
+after_halftime_filter,1939
+after_period_filter,1916
+after_first_change_per_team_match,1587
+after_minimum_change_gap,1587
+after_opponent_response_filter,1587
+matched_treatments_before_complete_case,1083
+unmatched_treatments,191
+dropped_incomplete_pairs,548
+complete_treatment_control_pairs,535
+primary_long_rows,2140

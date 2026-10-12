@@ -1,0 +1,168 @@
+{
+  "status": "PASS",
+  "counts": {
+    "games": 3961,
+    "competition_season_pairs": 80,
+    "raw_events": 13911986,
+    "canonical_events": 13911986,
+    "tactical_shifts": 10865,
+    "halftime_shifts": 1064,
+    "formation_changes": 3290,
+    "eligible_natural_experiments": 3282,
+    "natural_experiment_rows": 3282,
+    "natural_experiments_complete_ppda": 2056,
+    "natural_experiments_missing_ppda": 1226,
+    "natural_experiments_halftime": 384,
+    "natural_experiments_extra_time": 30,
+    "match_ppda_rows": 7922,
+    "ppda_15min_rows": 47532,
+    "ppda_15min_missing": 965,
+    "processing_errors_bytes": 1
+  },
+  "checks": [
+    {
+      "check": "inventory_game_ids_unique",
+      "status": "PASS",
+      "value": 0,
+      "expected": 0
+    },
+    {
+      "check": "inventory_event_files_complete",
+      "status": "PASS",
+      "value": 0,
+      "expected": 0
+    },
+    {
+      "check": "inventory_lineup_files_complete",
+      "status": "PASS",
+      "value": 0,
+      "expected": 0
+    },
+    {
+      "check": "competition_season_pairs",
+      "status": "PASS",
+      "value": 80,
+      "expected": 80
+    },
+    {
+      "check": "summary_game_count_matches_inventory",
+      "status": "PASS",
+      "value": 3961,
+      "expected": 3961
+    },
+    {
+      "check": "summary_game_ids_unique",
+      "status": "PASS",
+      "value": 0,
+      "expected": 0
+    },
+    {
+      "check": "canonical_event_count_preserved_all_games",
+      "status": "PASS",
+      "value": 0,
+      "expected": 0
+    },
+    {
+      "check": "processing_errors_empty",
+      "status": "PASS",
+      "value": "empty",
+      "expected": "empty"
+    },
+    {
+      "check": "match_ppda_row_count",
+      "status": "PASS",
+      "value": 7922,
+      "expected": 7922
+    },
+    {
+      "check": "match_ppda_two_rows_per_match_by_pair",
+      "status": "PASS",
+      "value": 0,
+      "expected": 0
+    },
+    {
+      "check": "ppda_15min_row_count",
+      "status": "PASS",
+      "value": 47532,
+      "expected": 47532
+    },
+    {
+      "check": "ppda_15min_keys_unique",
+      "status": "PASS",
+      "value": 0,
+      "expected": 0
+    },
+    {
+      "check": "match_ppda_missing_values",
+      "status": "PASS",
+      "value": 0,
+      "expected": 0
+    },
+    {
+      "check": "ppda_15min_missing_values",
+      "status": "WARN",
+      "value": 965,
+      "expected": 0
+    },
+    {
+      "check": "natural_experiment_count_matches_summary",
+      "status": "PASS",
+      "value": 3282,
+      "expected": 3282
+    },
+    {
+      "check": "natural_experiment_ids_unique",
+      "status": "PASS",
+      "value": 0,
+      "expected": 0
+    },
+    {
+      "check": "natural_experiment_eligible_count",
+      "status": "PASS",
+      "value": 3282,
+      "expected": 3282
+    },
+    {
+      "check": "natural_experiments_with_complete_ppda",
+      "status": "WARN",
+      "value": 2056,
+      "expected": 3282
+    },
+    {
+      "check": "natural_experiment_halftime_shifts_flagged",
+      "status": "PASS",
+      "value": 384,
+      "expected": "column present"
+    },
+    {
+      "check": "natural_experiments_near_halftime_or_crossing_boundary",
+      "status": "WARN",
+      "value": 529,
+      "expected": 0
+    },
+    {
+      "check": "natural_experiments_in_extra_time",
+      "status": "WARN",
+      "value": 30,
+      "expected": 0
+    },
+    {
+      "check": "natural_experiment_five_minute_windows",
+      "status": "PASS",
+      "value": 0,
+      "expected": 0
+    },
+    {
+      "check": "eligible_not_greater_than_actual_changes",
+      "status": "PASS",
+      "value": 0,
+      "expected": 0
+    },
+    {
+      "check": "halftime_shifts_not_greater_than_tactical_shifts",
+      "status": "PASS",
+      "value": 0,
+      "expected": 0
+    }
+  ]
+}

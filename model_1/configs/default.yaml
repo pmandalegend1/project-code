@@ -1,0 +1,68 @@
+# RAMFP — state encoder + opponent co-behavior model
+# Values match Table 9 of the draft unless noted.
+
+encoder:
+  d_model: 128        # Transformer d_model
+  n_layers: 4         # Transformer layers
+  n_heads: 4
+  dim_ff: 256
+  dropout: 0.1
+  seq_len: 50         # N: number of recent events
+  gat_layers: 2       # GAT layers in the state encoder
+  gat_heads: 4
+  gat_dim: 128
+  knn: 3              # intra-formation adjacency degree
+  d_context: 256      # dimension of z_t
+  use_pyg: false      # true -> torch-geometric GATv2 instead of DenseGAT
+
+opponent:
+  d_model: 256        # must equal encoder.d_context
+  n_heads: 4
+  d_style: 32         # style embedding dimension
+  dropout: 0.1
+  kl_lambda: 0.1      # KL(p || uniform) calibration weight
+  label_smoothing: 0.0
+  freeze_encoder: false
+
+train:
+  lr: 0.0003
+  weight_decay: 0.01
+  batch_size: 64
+  epochs: 40
+  patience: 8
+  # "loss" scores BOTH heads on held-out matches and keeps the KL
+  # calibration term in view, which the conformal terminator depends on.
+  # "nll" is the formation head's NLL on the decisions where the shape
+  # actually moved. Selecting on top1 wrecks ECE and now warns.
+  select_on: loss
+  warmup_frac: 0.1
+  grad_clip: 1.0
+  mirror_augment: true
+  n_folds: 5
+  seeds: [0, 1, 2]
+  num_workers: 0
+  amp: true
+
+pretrain:
+  lr: 0.0003
+  batch_size: 128
+  epochs: 5
+  max_sequences: null
+
+inference:
+  candidate_k: 20     # K
+  max_rounds: 2       # M
+  conformal_alpha: 0.10
+  # measured, not assumed: at alpha=0.10 every held-out prediction set is <= 3,
+  # so the previous value of 6 fired on 0.0% of decisions. 1 fires on 39.6%,
+  # 2 on 2.8%. Re-derive with eval_conformal.py if alpha or the model changes.
+  conformal_threshold: 1
+  critic_weights: [0.5, 0.0, 0.5]
+
+paths:
+  processed: data/processed
+  models: models
+  results: results
+
+device: auto
+seed: 0

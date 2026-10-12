@@ -1,0 +1,96 @@
+{
+  "description": "E_inter edges for bipartite matchup graph. For each attacking canonical role idx, lists the 1-2 defending canonical role indices it directly opposes. Home team attacks, away team defends. Indices reference canonical_roles.json (0=GK,1=RB,2=RCB,3=CB,4=LCB,5=LB,6=CDM,7=CM,8=CAM,9=W,10=ST).",
+  "matchups": [
+    {
+      "attacking_idx": 0,
+      "attacking_label": "GK",
+      "defending_indices": [10],
+      "defending_labels": ["ST"],
+      "rationale": "GK directly faces the opposition striker in long-ball / pressing situations. Also used to model GK distribution under press."
+    },
+    {
+      "attacking_idx": 1,
+      "attacking_label": "RB",
+      "defending_indices": [9, 4],
+      "defending_labels": ["W", "LCB"],
+      "rationale": "Attacking RB overlaps and faces the opposing left winger and, when the RB advances into the final third, the LCB stepping across to cover."
+    },
+    {
+      "attacking_idx": 2,
+      "attacking_label": "RCB",
+      "defending_indices": [10, 9],
+      "defending_labels": ["ST", "W"],
+      "rationale": "RCB in possession faces the opposition striker pressing and, in wide systems, a dropping wide forward."
+    },
+    {
+      "attacking_idx": 3,
+      "attacking_label": "CB",
+      "defending_indices": [10],
+      "defending_labels": ["ST"],
+      "rationale": "Central CB directly opposes the central striker. In two-striker systems the same canonical slot covers both CBs."
+    },
+    {
+      "attacking_idx": 4,
+      "attacking_label": "LCB",
+      "defending_indices": [10, 9],
+      "defending_labels": ["ST", "W"],
+      "rationale": "Mirror of RCB: faces striker and right winger dropping to press."
+    },
+    {
+      "attacking_idx": 5,
+      "attacking_label": "LB",
+      "defending_indices": [9, 2],
+      "defending_labels": ["W", "RCB"],
+      "rationale": "Attacking LB overlapping faces the opposing right winger and, when advanced, the RCB covering across."
+    },
+    {
+      "attacking_idx": 6,
+      "attacking_label": "CDM",
+      "defending_indices": [8, 7],
+      "defending_labels": ["CAM", "CM"],
+      "rationale": "CDM in possession is pressed by the opposition CAM or central midfielder dropping to screen. Key axis in high-press vs double-pivot matchups."
+    },
+    {
+      "attacking_idx": 7,
+      "attacking_label": "CM",
+      "defending_indices": [6, 7],
+      "defending_labels": ["CDM", "CM"],
+      "rationale": "CM drives into space and faces the opposing CDM or peer CM. Mid-block sides use the CM slot to screen central penetrations."
+    },
+    {
+      "attacking_idx": 8,
+      "attacking_label": "CAM",
+      "defending_indices": [6, 3],
+      "defending_labels": ["CDM", "CB"],
+      "rationale": "CAM / second striker operates between the lines and is picked up by the opposing CDM or a stepping CB in low-block shapes."
+    },
+    {
+      "attacking_idx": 9,
+      "attacking_label": "W",
+      "defending_indices": [1, 5],
+      "defending_labels": ["RB", "LB"],
+      "rationale": "Wide forward (both wingers collapsed to one canonical slot) directly opposes the opposition fullbacks. In five-back systems this maps to wing-backs."
+    },
+    {
+      "attacking_idx": 10,
+      "attacking_label": "ST",
+      "defending_indices": [3, 2],
+      "defending_labels": ["CB", "RCB"],
+      "rationale": "Centre forward directly opposes the central defenders. In three-back systems the middle CB (idx 3) is the primary matchup; RCB (idx 2) is secondary."
+    }
+  ],
+  "edge_list": [
+    [0, 10],
+    [1, 9], [1, 4],
+    [2, 10], [2, 9],
+    [3, 10],
+    [4, 10], [4, 9],
+    [5, 9], [5, 2],
+    [6, 8], [6, 7],
+    [7, 6], [7, 7],
+    [8, 6], [8, 3],
+    [9, 1], [9, 5],
+    [10, 3], [10, 2]
+  ],
+  "edge_list_note": "Format: [attacking_canonical_idx, defending_canonical_idx]. In graph_builder.py, home attacking node i connects to away defending node (11 + defending_canonical_idx). The [7,7] entry is CM-vs-CM: both sides share the same canonical slot, so in the bipartite graph this is home node 7 -> away node 18 (11+7), which is valid since they are distinct nodes."
+}

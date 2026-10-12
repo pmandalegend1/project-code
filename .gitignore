@@ -1,0 +1,58 @@
+# Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Pytest cache
+.pytest_cache/
+.cache/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# Logs and PIDs
+logs/
+*.log
+*.pid
+train_status_*.txt
+
+# Model weights (binary files)
+*.pt
+*.pth
+
+# Backups (Ignore backups, but keep the processed-data!)
+backups_before_retrain/
+*_backup/
+measurement/processed-data_backup/
+
+# Large Data files (ONLY ignore the massive raw data)
+measurement/open-data/
+*.parquet
+*.zip
+
+# Safety net to ensure result JSONs are never ignored
+!results/*.json
+!model_1/*.json
+!world_model/*.json
+
+
+# macOS metadata
+.DS_Store
+._*
+
+
+*.bak_*
+*.bak
