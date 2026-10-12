@@ -2,7 +2,7 @@
 
 Ranking candidate football formation changes from event data by combining opponent-response prediction, formation-pair outcome modelling and tactical critics with historical priors.
 
-> **Status:** results are being updated and are not included here.
+> **Status:** main results are reported in [§7](#7-results). They measure offline agreement with recorded coach choices, not tactical benefit.
 
 ---
 
@@ -14,12 +14,13 @@ Ranking candidate football formation changes from event data by combining oppone
 4. [Data](#4-data)
 5. [Components](#5-components)
 6. [Evaluation design](#6-evaluation-design)
-7. [Training configuration](#7-training-configuration)
-8. [Scope and known limitations](#8-scope-and-known-limitations)
-9. [Roadmap](#9-roadmap)
-10. [Data licence](#10-data-licence)
-11. [Glossary](#11-glossary)
-12. [Background](#12-background)
+7. [Results](#7-results)
+8. [Training configuration](#8-training-configuration)
+9. [Scope and known limitations](#9-scope-and-known-limitations)
+10. [Roadmap](#10-roadmap)
+11. [Data licence](#11-data-licence)
+12. [Glossary](#12-glossary)
+13. [Background](#13-background)
 
 ---
 
@@ -37,6 +38,8 @@ When a coach changes formation, which formation do they pick, and what would the
 | **Ranker** | Conditional logit over critic features and historical priors |
 
 Core question: do learned opponent and outcome models add information **beyond historical transition patterns**? Evaluation is offline, as agreement with recorded coach choices. Agreement with historical decisions is treated as distinct from evidence that a recommendation improves match outcomes.
+
+In this evaluation they do not: a historical transition matrix gives the highest agreement, and the combined prior-and-critic ranker does not improve on it ([§7](#7-results)).
 
 ---
 
@@ -416,7 +419,171 @@ $$\Delta_i^{\rm DiD}=(Y_{i,T,\rm post}-Y_{i,T,\rm pre})-(Y_{i,C,\rm post}-Y_{i,C
 
 ---
 
-## 7. Training configuration
+## 7. Results
+
+All results are offline. They measure **agreement with recorded coach choices** and the quality of component predictions; they are not evidence that a recommendation improves match outcomes. Bold marks the best displayed estimate, not statistical significance. Reported ± values are standard deviations over seeds or folds, not confidence intervals.
+
+### 7.1 Samples
+
+| Quantity | Count |
+|---|---:|
+| Source matches (StatsBomb Open Data snapshot) | 2,651 |
+| Competition–season pairs in the snapshot | 67 |
+| Events in the snapshot | 9,407,111 |
+| Formation changes identified | 2,168 |
+| **Ranking decisions** (after filters in §4.1) | **2,133** |
+| Matches with ranking decisions | 1,378 |
+| Competition–season pairs with ranking decisions | 44 |
+| Opponent labels that differ from the current formation | 235 (≈ 11.0%) |
+| Decisions with a complete 900 s response horizon | 1,550 (583 are shorter) |
+| Decisions per fold (five folds, grouped by match) | 427 / 427 / 427 / 426 / 426 |
+| Opponent-style clusters | 2 (selected from k = 2…6; 229 teams) |
+| Event-pretraining sequences | 200,000 |
+| Outcome windows | 164,755 |
+| Concession-risk transitions | 1,851 (from 1,271 matches) |
+| Matched pressing pairs | 59 |
+
+These samples answer different questions and are not pooled.
+
+### 7.2 Ranking of replacement formations
+
+Agreement with the recorded replacement formation on all 2,133 decisions. Top-1 and top-3 are percentages.
+
+| Method | Top-1 | Top-3 | MRR |
+|---|---:|---:|---:|
+| Transition matrix | **28.2** | **61.7** | **.489** |
+| Prior ranker | 28.0 | 60.5 | .483 |
+| Prior + critic ranker | 27.3 | 60.2 | .478 |
+| LightGBM (lambdarank) | 22.3 | 47.3 | .409 |
+| XGBoost (rank:pairwise) | 20.8 | 42.9 | .384 |
+| Learned critic ranker | 11.9 | 26.3 | .267 |
+| Equal critic weights | 9.5 | 20.9 | .234 |
+| Random | 6.1 | 20.2 | .210 |
+
+Paired top-1 differences in percentage points, with 95% intervals from 5,000 match-level bootstrap resamples (models fixed, so intervals exclude retraining uncertainty):
+
+| Contrast | Difference | 95% interval |
+|---|---:|---|
+| Learned critics minus random | 5.77 | [4.04, 7.50] |
+| Learned critics minus equal weights | 2.39 | [0.56, 4.27] |
+| Combined ranker minus prior ranker | −0.75 | [−2.88, 1.40] |
+| Combined ranker minus transition | −0.94 | [−3.05, 1.19] |
+
+Reading:
+
+- The transition matrix is best on every ranking metric. The combined prior-and-critic ranker does not improve on it or on the prior ranker; both intervals include zero.
+- The learned critic ranker beats random and equal weighting, but it stays about 16 points below transitions. Its edge over random cannot be credited to the critics alone, because its feature set also contains the generator prior `H`.
+- Gradient-boosted rankers also fall below transitions.
+- Row names follow the reported systems. Complete feature configurations for each reported fit are not available, so these comparisons evaluate named systems as a whole and do not isolate the effect of adding critics (see the ablation note in §5.6).
+- Historical transitions predict recorded choices well. That does not show that common choices produce better outcomes.
+
+### 7.3 Opponent response
+
+Means ± SD over three seeds × five folds.
+
+| Measure | With style | Without style | Reference |
+|---|---:|---:|---|
+| Next-formation top-1 (%) | 88.7 ± 1.3 | 88.8 ± 1.2 | Persistence: 89.0 |
+| Change AUROC | .540 ± .032 | .545 ± .036 | Chance: .5 |
+| Change average precision | .136 ± .023 | .142 ± .027 | Prevalence: .110 |
+| Changed-only top-1 (%) | 17.9 ± 5.8 | 20.3 ± 6.1 | 235 changed labels |
+
+Overall accuracy is close to persistence because only about 11% of labels change. Change AUROC is near chance and average precision is only modestly above prevalence, so high overall accuracy gives limited evidence of predicting actual opponent changes. Removing style slightly improves every displayed estimate; this shows no measured advantage for style but does not establish equivalence.
+
+### 7.4 Outcome model
+
+Pearson correlation on 1,199 non-overlapping validation windows (1,133 with a measured PPDA target). Neural rows show mean ± sample SD over seeds 42, 43, 44; all methods use the same evaluation subset.
+
+| Method | ΔxG | Pass share | PPDA | Shots on target |
+|---|---:|---:|---:|---:|
+| Ridge | .2002 | .5107 | .2812 | **.0692** |
+| Gradient boosting | .1304 | .4759 | .2434 | −.0428 |
+| Role-graph model | **.2185** ± .0264 | .5241 ± .0065 | .3121 ± .0183 | .0472 ± .0079 |
+| Mean-pooling MLP | .2106 ± .0265 | **.5251** ± .0099 | **.3126** ± .0096 | .0500 ± .0041 |
+
+Both neural models predict pass share most strongly and shots on target weakly. The graph model is slightly ahead on xG; the MLP is slightly ahead on the other three neural comparisons; ridge is best on shots on target. Graph message passing therefore shows no consistent advantage. Checkpoint selection shares the validation partition, windows from the same match remain related, and predicting outcomes across observed states does not show that a model can rank alternative formations within one state.
+
+### 7.5 Concession-risk (stability) prediction
+
+1,851 transitions from 1,271 matches; positive-label prevalence .1621. Means ± population SD across folds (references: 5 fits) or fold–seed combinations (MLP: 15 fits).
+
+| Method | AUROC | Average precision | Fits |
+|---|---:|---:|---:|
+| Raw structural distance | .4553 ± .0269 | .1501 ± .0093 | 5 |
+| Logistic on structural distance | **.5447** ± .0269 | .1784 ± .0181 | 5 |
+| Stability MLP | .5365 ± .0171 | **.1887** ± .0250 | 15 |
+
+Logistic regression is higher on AUROC and the MLP on average precision, so neither is consistently better. Both are only slightly above .5 AUROC. Raw distance is below .5 and the fitted logistic slopes are negative, so larger structural changes do not consistently indicate higher concession risk. That does not mean they are protective: coaches choose changes under match conditions that are only partly observed. The balanced logistic reference here differs from the (unweighted) scoring model, and the MLP is not the implemented ranking critic.
+
+### 7.6 Supporting analyses
+
+These use separate samples and procedures.
+
+**Planner comparison** — 233 decisions from the non-calibration part of fold 0. Top-k are percentages.
+
+| Method | Top-1 | Top-3 | Top-5 | MRR |
+|---|---:|---:|---:|---:|
+| Transition | 26.2 | 58.4 | 79.8 | .472 |
+| Planner | 8.6 | 21.9 | 33.9 | .234 |
+
+The transition baseline is higher on every metric, and a longer list does not close the gap. The sample and scoring procedure differ from the main ranking experiment, and there is no controlled comparison with and without revision, so revision's effect is not isolated. Effective critic shares are 36.1% xG, 27.8% stability and 36.1% counter-resistance.
+
+**Prediction sets** — nominal coverage .80, repeated match-level half-splits; means ± SD.
+
+| Method | Coverage | Mean size |
+|---|---:|---:|
+| Conformal set | .803 ± .043 | .89 ± .04 |
+| Model top-1 | .896 ± .012 | 1.00 |
+| Persistence | .896 ± .012 | 1.00 |
+| Marginal top-*k* | .793 ± .055 | 6.20 ± .40 |
+
+Conformal coverage is close to nominal with far smaller sets than the marginal baseline. A mean size of .89 means some sets are empty, so part of the size reduction is abstention. Against persistence, coverage drops by about 9.3 points while mean size drops by only .11 formations. Coverage is not established during adaptive planning (the threshold is fitted on mixture probabilities but applied to the conditional head). Persistence coverage (.896) differs from §7.3 (89.0%) because the sample differs.
+
+**Calibration (fitting diagnostic).** On fold-0 held-out matches, ECE falls from .371 to .069 and NLL from .764 to .434 after fitting. Fitted parameters and predictions are not retained and the evaluation group can overlap calibration data, so this is not a verified improvement on an independent test set.
+
+**Pressing around observed formation changes** — difference-in-differences on the opponent's defensive actions per 100 passes by the changing team, 59 matched pairs from 59 matches. Index 0 is the main contrast; negative indices are leads and +1 a lag, following the experiment's indexing. Samples differ across rows.
+
+| Index | Estimate [95% interval] | *p* | Pairs |
+|---|---|---:|---:|
+| −3 | −3.68 [−15.99, 8.63] | .56 | 25 |
+| −2 | −3.65 [−10.65, 3.34] | .31 | 50 |
+| 0 | −6.22 [−12.50, 0.05] | .052 | 59 |
+| +1 | −0.57 [−7.96, 6.82] | .88 | 44 |
+
+The primary estimate is −6.22 (SE 3.20), with an interval that includes zero. A negative value means fewer defensive actions relative to passes, not lower PPDA. Intervals before the change are also wide, and including zero does not establish parallel trends. Sensitivity checks:
+
+- Negative-binomial rate ratio .785, 95% [.541, 1.138], *p* = .20 (sample alignment with the primary analysis not established).
+- Retaining substitutions: −2.14 (*p* = .006, 617 pairs); this cannot separate formation changes from personnel changes.
+- Three-minute analysis: 68 pairs, *p* = .36. Ten-minute analysis: three pairs, not estimated.
+
+These are observed changes, not interventions chosen by RAMFP, so they do not show a benefit from following its recommendations.
+
+**Agreement and subsequent xG (exploratory)** — 1,623 decisions; agreement is 9.1% for the planner and 29.8% for transitions in this sample.
+
+| Term | Coefficient (xG) | 95% interval |
+|---|---:|---|
+| Planner agreement | −0.031 | [−0.090, 0.025] |
+| Transition agreement | +0.043 | [0.004, 0.082] |
+
+A random-candidate placebo produced a coefficient above the planner's in 79.5% of 200 draws. Agreement depends on match conditions rather than random assignment, and the covariate specification and per-decision predictions are not available, so these are associations only.
+
+### 7.7 What the results show
+
+1. **Historical transitions are a strong reference** for predicting recorded formation choices; the evaluated critics rank above random but add no measurable benefit beyond priors.
+2. **High opponent accuracy is mostly persistence.** Change detection is near chance.
+3. **Predicting outcomes across observed states is not the same as comparing formations within one state**, and graph message passing shows no consistent gain.
+4. **Agreement with recorded choices is not tactical benefit.** Evaluating benefit needs separate, outcome-based evidence.
+
+### 7.8 Limits on the reported numbers
+
+- Fully nested evaluation is not established: shared preprocessing, style summaries, pretraining data (748 matches shared with the decision sample) and feature caches can carry information across partitions, and stability fitting uses its own folds.
+- Outcome checkpoint selection uses the evaluation partition, and the season-based split is not strictly chronological.
+- Several analyses (ranking, opponent ablations, calibration, planner, pressing) have aggregate summaries but no per-decision predictions, so they cannot be independently recomputed from the records here.
+- Seed and fold standard deviations come from overlapping training folds and are descriptive, not independent replications. Small differences do not establish equivalence.
+
+---
+
+## 8. Training configuration
 
 | Component | LR | Batch | Max epochs | Patience | Optimiser |
 |---|---:|---:|---:|---:|---|
@@ -431,7 +598,7 @@ $$\Delta_i^{\rm DiD}=(Y_{i,T,\rm post}-Y_{i,T,\rm pre})-(Y_{i,C,\rm post}-Y_{i,C
 
 ---
 
-## 8. Scope and known limitations
+## 9. Scope and known limitations
 
 - Event data omit continuous off-ball movement; canonical roles are templates, not tracked positions.
 - Opponent-response labels use a first-shift rule over a fixed horizon; incomplete windows describe only the available record.
@@ -444,7 +611,7 @@ $$\Delta_i^{\rm DiD}=(Y_{i,T,\rm post}-Y_{i,T,\rm pre})-(Y_{i,C,\rm post}-Y_{i,C
 
 ---
 
-## 9. Roadmap
+## 10. Roadmap
 
 ```mermaid
 flowchart LR
@@ -459,13 +626,13 @@ Also planned: matching no-style opponent runs, feature-cache hashing with per-de
 
 ---
 
-## 10. Data licence
+## 11. Data licence
 
 Event data come from StatsBomb Open Data and are used under StatsBomb's licence and attribution terms. Data are not included in this repository. Match identifiers permit linkage to public records, so processed data are not anonymous.
 
 ---
 
-## 11. Glossary
+## 12. Glossary
 
 | Term | Meaning |
 |---|---|
@@ -503,7 +670,7 @@ Event data come from StatsBomb Open Data and are used under StatsBomb's licence 
 
 ---
 
-## 12. Background
+## 13. Background
 
 Related lines of work this project builds on or contrasts with:
 
